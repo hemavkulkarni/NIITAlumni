@@ -1,0 +1,78 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:websocket="http:/www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/mvc
+	 http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+	<context:component-scan base-package="com" />
+	<context:annotation-config />
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:annotation-driven />
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/views/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.h2.Driver"></property>
+		<property name="url" value="jdbc:h2:tcp://localhost/~/test"></property>
+		<property name="username" value="sa"></property>
+		<property name="password" value=""></property>
+	</bean>
+
+	<!-- For Uploading image- Multipart file <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/> -->
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="annotatedClasses">
+			<list>
+				<value>com.Model.Blog</value>
+				<value>com.Model.User</value>
+				<value>com.Model.Forum</value>
+			</list>
+		</property>
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+	<tx:annotation-driven />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="userServiceImpl" class="com.service.UserServiceImpl" />
+	<bean id="blogServiceImpl" class="com.service.BlogServiceImpl" />
+	<bean id="forumServiceImpl" class="com.service.ForumServiceImpl" />
+	<context:annotation-config />
+	<!-- application-destination-prefix="/app" -->
+	<!-- <websocket:message-broker
+		application-destination-prefix="/app">
+		<websocket:stomp-endpoint path="/hello">
+			<websocket:sockjs />
+		</websocket:stomp-endpoint>
+		<websocket:simple-broker prefix="/topic" />
+	</websocket:message-broker> -->
+</beans>
